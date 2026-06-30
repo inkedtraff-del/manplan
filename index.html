@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inked Fit Elite - The 10% Blueprint</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&family=Oswald:wght@500;700&display=swap" rel="stylesheet">
+    
+    <!-- PWA META TAGS -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#fcd34d">
+    <link rel="apple-touch-icon" href="assets/icon-192.png">
+
+    <style>
+        :root { --yellow: #fcd34d; --black: #0b0b0b; --dark-bg: #141414; --white: #ffffff; --light-bg: #f9fafb; --gray: #262626; --text-m: #9ca3af; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background: #222; display: flex; flex-direction: column; align-items: center; gap: 50px; padding: 50px 20px; font-family: 'Inter', sans-serif; font-size: 15px; line-height: 1.6; -webkit-font-smoothing: antialiased; }
+        .cite { display: none !important; } /* Hidden citations to keep the UI clean */
+        
+        .a4-page { width: 210mm; background: var(--white); box-shadow: 0 25px 60px rgba(0,0,0,0.8); position: relative; display: flex; flex-direction: column; padding: 18mm 20mm; border-radius: 4px; }
+        .page-dark { background: var(--dark-bg); color: #e5e7eb; }
+        .page-light { background: var(--white); color: var(--black); }
+        
+        h1 { font-family: 'Oswald', sans-serif; font-size: 46px; text-transform: uppercase; line-height: 1.1; margin-bottom: 20px; color: var(--white); letter-spacing: 1px; }
+        .page-light h1 { color: var(--black); }
+        h1 span { color: var(--yellow); }
+        h2 { font-family: 'Oswald', sans-serif; font-size: 24px; background: var(--yellow); color: var(--black); padding: 6px 14px; display: inline-block; text-transform: uppercase; margin: 30px 0 20px 0; border-radius: 6px; letter-spacing: 0.5px; }
+        h3 { font-family: 'Oswald', sans-serif; font-size: 22px; color: var(--yellow); text-transform: uppercase; margin: 25px 0 15px 0; border-bottom: 2px solid var(--gray); padding-bottom: 8px; letter-spacing: 0.5px; }
+        .page-light h3 { color: var(--black); border-bottom-color: #e5e7eb; }
+        p { margin-bottom: 18px; text-align: justify; }
+        .intro-text { font-size: 18px; font-weight: 500; line-height: 1.7; color: var(--text-m); }
+        .page-light .intro-text { color: #4b5563; }
+        ul { margin-bottom: 20px; padding-left: 24px; } li { margin-bottom: 10px; }
+        .highlight { color: var(--yellow); font-weight: 700; }
+        .page-light .highlight { color: var(--black); background: var(--yellow); padding: 2px 6px; border-radius: 4px; }
+
+        /* Unified Card Layout */
+        .card { background: var(--white); border: 1px solid #e5e7eb; display: flex; gap: 24px; padding: 20px; margin-bottom: 20px; align-items: center; border-radius: 12px; position: relative; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.03); transition: transform 0.2s; }
+        .card::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 6px; background: var(--yellow); }
+        .page-dark .card { background: #1a1a1a; border-color: #333; box-shadow: 0 8px 25px rgba(0,0,0,0.4); }
+        
+        .c-img { width: 140px; height: 140px; background: #f3f4f6; border-radius: 8px; overflow: hidden; flex-shrink: 0; }
+        .page-dark .c-img { background: #0b0b0b; border: 1px solid #333; }
+        .c-img img { width: 100%; height: 100%; object-fit: cover; }
+        
+        .c-info { flex: 1; display: flex; flex-direction: column; gap: 8px; justify-content: center; }
+        .c-tags { display: flex; gap: 10px; align-items: center; margin-bottom: 4px; }
+        .tag-main { background: var(--yellow); color: var(--black); font-weight: 900; font-size: 11px; padding: 3px 8px; border-radius: 4px; text-transform: uppercase; letter-spacing: 1px; }
+        .c-title { font-family: 'Oswald', sans-serif; font-size: 22px; color: var(--black); text-transform: uppercase; margin: 0; letter-spacing: 0.5px; line-height: 1.2; }
+        .page-dark .c-title { color: var(--white); }
+        
+        .c-meta { display: flex; gap: 12px; margin: 4px 0; flex-wrap: wrap; }
+        .meta-item { background: var(--black); color: var(--yellow); padding: 5px 10px; font-family: monospace; font-weight: 900; font-size: 13px; border-radius: 6px; letter-spacing: 1px; }
+        .page-dark .meta-item { background: #000; color: #60a5fa; border: 1px solid #333; }
+        
+        .c-desc { font-size: 15px; font-weight: 500; color: #374151; margin: 0; line-height: 1.5; }
+        .page-dark .c-desc { color: var(--text-m); font-weight: 400; }
+        
+        .footer-tag { text-align: center; margin-top: auto; padding-top: 40px; font-family: 'Oswald', sans-serif; color: var(--gray); letter-spacing: 2px; font-size: 12px; }
+        .page-light .footer-tag { color: #d1d5db; }
+       /* ИСПРАВЛЕННЫЙ БЛОК ДЛЯ ПЕЧАТИ (Command + P) *//* ЖЕСТКИЙ ФИКС ДЛЯ ПЕЧАТИ (ОТМЕНА РАЗРЫВОВ) */
+        @media print { 
+            @page { size: A4; margin: 0; }
+            html, body { 
+                display: block !important; 
+                background: var(--dark-bg) !important; 
+                height: auto !important; 
+                margin: 0 !important;
+                padding: 0 !important;
+            } 
+            /* Убиваем Flexbox-контейнер при печати, чтобы Хром не сходил с ума */
+            .a4-page { 
+                display: block !important; 
+                box-shadow: none !important; 
+                border-radius: 0 !important; 
+                margin: 0 !important; 
+                padding: 15mm 20mm !important; 
+                min-height: auto !important; 
+                height: auto !important;
+                page-break-after: always; 
+                break-after: page; 
+            } 
+            /* Жестко запрещаем резать карточки и заголовки пополам */
+            .card, h2, h3, .intro-text { 
+                page-break-inside: avoid !important; 
+                break-inside: avoid !important; 
+            } 
+            * { 
+                -webkit-print-color-adjust: exact !important; 
+                print-color-adjust: exact !important; 
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- PWA INSTALL BUTTON -->
+    <button id="installAppBtn" style="display: none; background: var(--yellow); color: var(--black); border: none; padding: 15px 30px; font-size: 18px; font-weight: 900; font-family: 'Oswald', sans-serif; border-radius: 8px; cursor: pointer; text-transform: uppercase; margin: 0 auto 30px auto; box-shadow: 0 4px 15px rgba(252, 211, 77, 0.4); text-align: center; width: 210mm; max-width: 100%;">
+        📲 Install Blueprint App
+    </button>
+
+    <!-- PAGE 1: INTRO -->
+    <div class="a4-page page-dark">
+        <h1>INKED FIT ELITE <br><span>THE 10% BLUEPRINT</span> <span class="cite"></span></h1>
+        <p class="intro-text">VOLUME 2: COMPLETE 12-WORKOUT MATRIX & 7-DAY FUEL CUSTOMIZATION <span class="cite"></span></p>
+        <p class="intro-text" style="margin-bottom: 50px;">A hyper-detailed body recomposition program engineered strictly for the 80kg high-threshold athlete. Fully optimized training loops and a 7-day precise nutritional map. <span class="cite"></span></p>
+        <h2>01/ PRINCIPLES OF THE 80KG RECOMPOSITION MATRIX <span class="cite"></span></h2>
+        <p>To execute an elite recomposition, your programming volume must match strict biomechanical parameters. <span class="cite"></span> For an 80kg athlete, retaining and stacking dense sarcomere contractile fibers while shredding fat cells requires an exact exercise allocation: <span class="cite"></span></p>
+        <p>Minimum 4 exercises for large muscle complexes (Chest, Back, Quads/Hamstrings) to maximize neural drive and mechanical tension, and minimum 3 exercises for smaller groups (Shoulders, Biceps, Triceps, Abs) to induce extreme metabolic fatigue and intracellular sarcoplasmic swelling. <span class="cite"></span></p>
+        <h2>TARGET DAILY ENERGY ALLOCATION <span class="cite"></span></h2>
+        <ul>
+            <li><span class="highlight">Total Energy:</span> 2,150 kcal <span class="cite"></span></li>
+            <li><span class="highlight">Protein Structure:</span> 176g (Optimal MPS retention) <span class="cite"></span></li>
+            <li><span class="highlight">Carbohydrates:</span> 190g (Glycogen threshold) <span class="cite"></span></li>
+            <li><span class="highlight">Essential Fats:</span> 62g (Androgenic stabilization) <span class="cite"></span></li>
+        </ul>
+        <h2>THE MANDATORY ULTRA-PREMIUM WARM-UP <span class="cite"></span></h2>
+        <p>Perform this exact loop prior to every single training block to lubricate the joint capsules and unlock full motor-unit recruitment: <span class="cite"></span></p>
+        <ul>
+            <li><strong>Incline Walking:</strong> 5-7 Minutes (Heart Rate target: 110 BPM). <span class="cite"></span></li>
+            <li><strong>Cuff Cable Internal/External Rotations:</strong> 2 Sets x 15 Reps (Slow, continuous tempo). <span class="cite"></span></li>
+            <li><strong>Scapular Hanging Pulls + Band Pull-Aparts:</strong> 2 Sets x 12 Reps each. <span class="cite"></span></li>
+            <li><strong>Barbell Only Specific Patterns:</strong> 2 Sets x 8 Reps of the primary compound lift. <span class="cite"></span></li>
+        </ul>
+        <div class="footer-tag">THE 10% BLUEPRINT • INKED FIT ELITE</div>
+    </div>
+
+    <!-- PAGE 2: W1 CHEST/SHOULDERS -->
+    <div class="a4-page page-dark">
+        <h2>02/ THE COMPLETE 12-WORKOUT PROTOCOL MATRIX <span class="cite"></span></h2>
+        <p>This is your complete, uncompromised 12-workout matrix. It functions as a progressive 4-week high-threshold training loop. Every muscle group receives exact angle manipulation. Do not alter the order of movements. <span class="cite"></span></p>
+        <h3 style="color: var(--white); border: none; margin-top: 30px;">WEEK 1: WORKOUTS 1-3 (ACUTE STIMULUS LOAD) <span class="cite"></span></h3>
+        <h3>WORKOUT 1: CHEST & SHOULDERS (VOLUME FOCUS) <span class="cite"></span></h3>
+        
+        <div class="card"><div class="c-img"><img src="assets/ex_w1_1.jpg" alt="Ex"></div><div class="c-info"><div class="c-tags"><span class="tag-main">CHEST</span><span class="cite"></span></div><p class="c-title">Incline Dumbbell Bench Press <span class="cite"></span></p><div class="c-meta"><span class="meta-item">4 SETS</span><span class="meta-item">6-8 REPS</span><span class="meta-item">120s REST</span><span class="cite"></span></div><p class="c-desc">45-degree angle. Heavy mechanical tension, 3s eccentric. <span class="cite"></span></p></div></div>
+        <div class="card"><div class="c-img"><img src="assets/ex_w1_2.jpg" alt="Ex"></div><div class="c-info"><div class="c-tags"><span class="tag-main">CHEST</span><span class="cite"></span></div><p class="c-title">Flat Barbell Bench Press <span class="cite"></span></p><div class="c-meta"><span class="meta-item">4 SETS</span><span class="meta-item">8 REPS</span><span class="meta-item">90s REST</span><span class="cite"></span></div><p class="c-desc">Explode from chest. Keep scapula locked flat to the bench. <span class="cite"></span></p></div></div>
+        <div class="card"><div class="c-img"><img src="assets/ex_w1_3.jpg" alt="Ex"></div><div class="c-info"><div class="c-tags"><span class="tag-main">CHEST</span><span class="cite"></span></div><p class="c-title">Decline Hammer Strength Press <span class="cite"></span></p><div class="c-meta"><span class="meta-item">4 SETS</span><span class="meta-item">10 REPS</span><span class="meta-item">90s REST</span><span class="cite"></span></div><p class="c-desc">Focus on lower pectoral drive. Deep stretch at the bottom. <span class="cite"></span></p></div></div>
+        <div class="card"><div class="c-img"><img src="assets/ex_w1_4.jpg" alt="Ex"></div><div class="c-info"><div class="c-tags"><span class="tag-main">SHOULDERS</span><span class="cite"></span></div><p class="c-title">High-to-Low Cable Crossovers <span class="cite"></span></p><div class="c-meta"><span class="meta-item">4 SETS</span><span class="meta-item">12 REPS</span><span class="meta-item">60s REST</span><span class="cite"></span></div><p class="c-desc">Squeeze handles together at bottom for 2 full seconds. <span class="cite"></span></p></div></div>
+        <div class="card"><div class="c-img"><img src="assets/ex_w1_5.jpg" alt="Ex"></div><div class="c-info"><div class="c-tags"><span class="tag-main">SHOULDERS</span><span class="cite"></span></div><p class="c-title">Seated Dumbbell Shoulder Press <span class="cite"></span></p><div class="c-meta"><span class="meta-item">3 SETS</span><span class="meta-item">8 REPS</span><span class="meta-item">90s REST</span><span class="cite"></span></div><p class="c-desc">Elbows tucked 30 degrees forward to safeguard rotator cuff. <span class="cite"></span></p></div></div>
+        <div class="card"><div class="c-img"><img src="assets/ex_w1_6.jpg" alt="Ex"></div><div class="c-info"><div class="c-tags"><span class="tag-main">SHOULDERS</span><span class="cite"></span></div><p class="c-title">Standing Cable Lateral Raises <span class="cite"></span></p><div class="c-meta"><span class="meta-item">3 SETS</span><span class="meta-item">12-15 REPS</span><span class="meta-item">60s REST</span><span class="cite"></span></div><p class="c-desc">Continuous lateral head tension. Do not swing hips. <span class="cite"></span></p></div></div>
+        <div class="card"><div class="c-img"><img src="assets/ex_w1_7.jpg" alt="Ex"></div><div class="c-info"><div class="c-tags"><span class="tag-main">SHOULDERS</span><span class="cite"></span></div><p class="c-title">Rear Delt Pec Deck Flyes <span class="cite"></span></p><div class="c-meta"><span class="meta-item">3 SETS</span><span class="meta-item">15 REPS</span><span class="meta-item">60s REST</span><span class="cite"></span></div><p class="c-desc">Keep hands wide. Focus purely on pulling via elbows. <span class="cite"></span></p></div></div>
+        <div class="footer-tag">THE 10% BLUEPRINT • INKED FIT ELITE</div>
+    </div>
+
+    <!-- PAGE 3: W2 BACK -->
+    <div class="a4-page page-dark">
+        <h3>WORKOUT 2: BACK & ARMS (WIDTH FOCUS) <span class="cite"></span></h3>
+        <div class="card"><div class="c-img"><img src="assets/ex_w2_1.jpg" alt="Ex"></div><div class="c-info"><div class="c-tags"><span class="tag-main">BACK</span><span class="cite"></span></div><p class="c-title">Weighted Pull-Ups <span class="cite"></span></p><div class="c-meta"><span class="meta-item">4 SETS</span><span class="meta-item">6 REPS</span><span class="meta-item">120s REST</span><span class="cite"></span></div><p class="c-desc">Full dead-stop stretch at bottom. Pull chest to bar. <span class="cite"></span></p></div></div>
+        <div class="card"><div class="c-img"><img src="assets/ex_w2_2.jpg" alt="Ex"></div><div class="c-info"><div class="c-tags"><span class="tag-main">BACK</span><span class="cite"></span></div><p class="c-title">Barbell Pendlay Rows <span class="cite"></span></p><div class="c-meta"><span class="meta-item">4 SETS</span><span class="meta-item">8 REPS</span><span class="meta-item">90s REST</span><span class="cite"></span></div><p class="c-desc">Strict flat back parallel to ground. Pull from floor each rep. <span class="cite"></span></p></div></div>
+        <div class="card"><div class="c-img"><img src="assets/ex_w2_3.jpg" alt="Ex"></div><div class="c-info"><div class="c-tags"><span class="tag-main">BACK</span><span class="cite"></span></div><p class="c-title">Wide Grip Lat Pulldown <span class="cite"></span></p><div class="c-meta"><span class="meta-item">4 SETS</span><span class="meta-item">10 REPS</span><span class="meta-item">75s REST</span><span class="cite"></span></div><p class="c-desc">Drive elbows into your back pockets. Do not lean back excessively. <span class="cite"></span></p></div></div>
+        <div class="card"><div class="c-img"><img src="assets/ex_w2_4.jpg" alt="Ex"></div><div class="c-info"><div class="c-tags"><span class="tag-main">BACK</span><span class="cite"></span></div><p class="c-title">Single-Arm Dumbbell Row <span class="cite"></span></p><div class="c-meta"><span class="meta-item">4 SETS</span><span class="meta-item">12 REPS</span><span class="meta-item">90s REST</span><span class="cite"></span></div><p class="c-desc">Stretch lats fully forward, pull dumbbell tightly to hip. <span class="cite"></span></p></div></div>
+        <div class="card"><div class="c-img"><img src="assets/ex_w2_5.jpg" alt="Ex"></div><div class="c-info"><div class="c-tags"><span class="tag-main">TRICEPS</span><span class="cite"></span></div><p class="c-title">EZ-Bar Skull Crushers <span class="cite"></span></p><div class="c-meta"><span class="meta-item">3 SETS</span><span class="meta-item">10 REPS</span><span class="meta-item">75s REST</span><span class="cite"></span></div><p class="c-desc">Lower bar to top of forehead. Keep elbows pinned. <span class="cite"></span></p></div></div>
+        <div class="footer-tag">THE 10% BLUEPRINT • INKED FIT ELITE</div>
+    </div>
+
+    <!-- PAGE 4: W2 ARMS -->
+    <div class="a4-page page-dark">
+        <h3 style="border: none;">WORKOUT 2: ARMS CONTINUED</h3>
+        <div class="card"><div class="c-img"><img src="assets/ex_w2_6.jpg" alt="Ex"></div><div class="c-info"><div class="c-tags"><span class="tag-main">TRICEPS</span><span class="cite"></span></div><p class="c-title">Cable Rope Pushdowns <span class="cite"></span></p><div class="c-meta"><span class="meta-item">3 SETS</span><span class="meta-item">12 REPS</span><span class="meta-item">60s REST</span><span class="cite"></span></div><p class="c-desc">Flare rope ends wide at full extension. Squeeze hard. <span class="cite"></span></p></div></div>
+        <div class="card"><div class="c-img"><img src="assets/ex_w2_7.jpg" alt="Ex"></div><div class="c-info"><div class="c-tags"><span class="tag-main">TRICEPS</span><span class="cite"></span></div><p class="c-title">Overhead DB Extension <span class="cite"></span></p><div class="c-meta"><span class="meta-item">3 SETS</span><span class="meta-item">12 REPS</span><span class="meta-item">60s REST</span><span class="cite"></span></div><p class="c-desc">Deep tricep long-head stretch at the bottom. <span class="cite"></span></p></div></div>
+        <div class="card"><div class="c-img"><img src="assets/ex_w2_8.jpg" alt="Ex"></div><div class="c-info"><div class="c-tags"><span class="tag-main">BICEPS</span><span class="cite"></span></div><p class="c-title">Incline Dumbbell Curls <span class="cite"></span></p><div class="c-meta"><span class="meta-item">3 SETS</span><span class="meta-item">10 REPS</span><span class="meta-item">75s REST</span><span class="cite"></span></div><p class="c-desc">Seat at 45 degrees. Keep elbows fixed behind hips. <span class="cite"></span></p></div></div>
+        <div class="card"><div class="c-img"><img src="assets/ex_w2_9.jpg" alt="Ex"></div><div class="c-info"><div class="c-tags"><span class="tag-main">BICEPS</span><span class="cite"></span></div><p class="c-title">Barbell Preacher Curls <span class="cite"></span></p><div class="c-meta"><span class="meta-item">3 SETS</span><span class="meta-item">10 REPS</span><span class="meta-item">60s REST</span><span class="cite"></span></div><p class="c-desc">Stop 10% short of full lockout at bottom to protect tendons. <span class="cite"></span></p></div></div>
+        <div class="card"><div class="c-img"><img src="assets/ex_w2_10.jpg" alt="Ex"></div><div class="c-info"><div class="c-tags"><span class="tag-main">BICEPS</span><span class="cite"></span></div><p class="c-title">Dumbbell Hammer Curls <span class="cite"></span></p><div class="c-meta"><span class="meta-item">3 SETS</span><span class="meta-item">12 REPS</span><span class="meta-item">60s REST</span><span class="cite"></span></div><p class="c-desc">Brachialis isolation. Controlled eccentric tracking. <span class="cite"></span></p></div></div>
+        <div class="footer-tag">THE 10% BLUEPRINT • INKED FIT ELITE</div>
+    </div>
+
+    <!-- PAGE 5: W3 LEGS/ABS -->
+    <div class="a4-page page-dark">
+        <h3>WORKOUT 3: LEGS & ABS (POSTERIOR CHAIN FOCUS) <span class="cite"></span></h3>
+        <div class="card"><div class="c-img"><img src="assets/ex_w3_1.jpg" alt="Ex"></div><div class="c-info"><div class="c-tags"><span class="tag-main">LEGS</span><span class="cite"></span></div><p class="c-title">Barbell Back Squat <span class="cite"></span></p><div class="c-meta"><span class="meta-item">4 SETS</span><span class="meta-item">6 REPS</span><span class="meta-item">150s REST</span><span class="cite"></span></div><p class="c-desc">Deep control below parallel. Keep spine upright and stacked. <span class="cite"></span></p></div></div>
+        <div class="card"><div class="c-img"><img src="assets/ex_w3_2.jpg" alt="Ex"></div><div class="c-info"><div class="c-tags"><span class="tag-main">LEGS</span><span class="cite"></span></div><p class="c-title">Romanian Deadlifts (RDL) <span class="cite"></span></p><div class="c-meta"><span class="meta-item">4 SETS</span><span class="meta-item">8 REPS</span><span class="meta-item">120s REST</span><span class="cite"></span></div><p class="c-desc">Hinge perfectly from hips. Push glutes directly backwards. <span class="cite"></span></p></div></div>
+        <div class="card"><div class="c-img"><img src="assets/ex_w3_3.jpg" alt="Ex"></div><div class="c-info"><div class="c-tags"><span class="tag-main">LEGS</span><span class="cite"></span></div><p class="c-title">Leg Press (Mid-Stance) <span class="cite"></span></p><div class="c-meta"><span class="meta-item">4 SETS</span><span class="meta-item">10 REPS</span><span class="meta-item">90s REST</span><span class="cite"></span></div><p class="c-desc">Continuous fluid tempo. Lower platform as deep as possible. <span class="cite"></span></p></div></div>
+        <div class="card"><div class="c-img"><img src="assets/ex_w3_4.jpg" alt="Ex"></div><div class="c-info"><div class="c-tags"><span class="tag-main">LEGS</span><span class="cite"></span></div><p class="c-title">Lying Leg Curls <span class="cite"></span></p><div class="c-meta"><span class="meta-item">4 SETS</span><span class="meta-item">12 REPS</span><span class="meta-item">60s REST</span><span class="cite"></span></div><p class="c-desc">Explosive contraction, slow control on the lowering phase. <span class="cite"></span></p></div></div>
+        <div class="card"><div class="c-img"><img src="assets/ex_w3_5.jpg" alt="Ex"></div><div class="c-info"><div class="c-tags"><span class="tag-main">ABS</span><span class="cite"></span></div><p class="c-title">Hanging Leg Raises <span class="cite"></span></p><div class="c-meta"><span class="meta-item">3 SETS</span><span class="meta-item">12-15 REPS</span><span class="meta-item">60s REST</span><span class="cite"></span></div><p class="c-desc">Do not swing. Use lower abs to raise legs to a 90-degree angle. <span class="cite"></span></p></div></div>
+        <div class="card"><div class="c-img"><img src="assets/ex_w3_6.jpg" alt="Ex"></div><div class="c-info"><div class="c-tags"><span class="tag-main">ABS</span><span class="cite"></span></div><p class="c-title">Weighted Cable Crunches <span class="cite"></span></p><div class="c-meta"><span class="meta-item">3 SETS</span><span class="meta-item">15 REPS</span><span class="meta-item">60s REST</span><span class="cite"></span></div><p class="c-desc">Flex spine deliberately, pull elbows towards your knees. <span class="cite"></span></p></div></div>
+        <div class="card"><div class="c-img"><img src="assets/ex_w3_7.jpg" alt="Ex"></div><div class="c-info"><div class="c-tags"><span class="tag-main">ABS</span><span class="cite"></span></div><p class="c-title">Ab Wheel Rollouts <span class="cite"></span></p><div class="c-meta"><span class="meta-item">3 SETS</span><span class="meta-item">10 REPS</span><span class="meta-item">60s REST</span><span class="cite"></span></div><p class="c-desc">Brace core flat. Roll out to full length safely. <span class="cite"></span></p></div></div>
+        <div class="footer-tag">THE 10% BLUEPRINT • INKED FIT ELITE</div>
+    </div>
+
+    <!-- PAGE 6: W4 CHEST/SHOULDERS -->
+    <div class="a4-page page-dark">
+        <h3 style="color: var(--white); border: none;">WEEK 2: WORKOUTS 4-6 (HYPERTROPHY DENSITY SHIFT) <span class="cite"></span></h3>
+        <h3>WORKOUT 4: CHEST & SHOULDERS (INCLINE FOCUS) <span class="cite"></span></h3>
+        <div class="card"><div class="c-img"><img src="assets/ex_w4_1.jpg" alt="Ex"></div><div class="c-info"><div class="c-tags"><span class="tag-main">CHEST</span><span class="cite"></span></div><p class="c-title">Incline Barbell Press <span class="cite"></span></p><div class="c-meta"><span class="meta-item">4 SETS</span><span class="meta-item">6-8 REPS</span><span class="meta-item">120s REST</span><span class="cite"></span></div><p class="c-desc">Lower bar to upper collarbone area cleanly. <span class="cite"></span></p></div></div>
+        <div class="card"><div class="c-img"><img src="assets/ex_w4_2.jpg" alt="Ex"></div><div class="c-info"><div class="c-tags"><span class="tag-main">CHEST</span><span class="cite"></span></div><p class="c-title">Incline Dumbbell Flyes <span class="cite"></span></p><div class="c-meta"><span class="meta-item">4 SETS</span><span class="meta-item">10 REPS</span><span class="meta-item">75s REST</span><span class="cite"></span></div><p class="c-desc">Deep outer pectoral stretch. Keep elbows bent slightly. <span class="cite"></span></p></div></div>
+        <div class="card"><div class="c-img"><img src="assets/ex_w4_3.jpg" alt="Ex"></div><div class="c-info"><div class="c-tags"><span class="tag-main">CHEST</span><span class="cite"></span></div><p class="c-title">Flat Dumbbell Press <span class="cite"></span></p><div class="c-meta"><span class="meta-item">4 SETS</span><span class="meta-item">8 REPS</span><span class="meta-item">90s REST</span><span class="cite"></span></div><p class="c-desc">Neutral-to-pronated rotation at top for hard inner contraction. <span class="cite"></span></p></div></div>
+        <div class="card"><div class="c-img"><img src="assets/ex_w4_4.jpg" alt="Ex"></div><div class="c-info"><div class="c-tags"><span class="tag-main">CHEST</span><span class="cite"></span></div><p class="c-title">Weighted Chest Dips <span class="cite"></span></p><div class="c-meta"><span class="meta-item">4 SETS</span><span class="meta-item">10 REPS</span><span class="meta-item">90s REST</span><span class="cite"></span></div><p class="c-desc">Lean forward at 30 degrees to shift load to chest fibers. <span class="cite"></span></p></div></div>
+        <div class="card"><div class="c-img"><img src="assets/ex_w4_5.jpg" alt="Ex"></div><div class="c-info"><div class="c-tags"><span class="tag-main">SHOULDERS</span><span class="cite"></span></div><p class="c-title">Standing Barbell Overhead Press <span class="cite"></span></p><div class="c-meta"><span class="meta-item">3 SETS</span><span class="meta-item">8 REPS</span><span class="meta-item">120s REST</span><span class="cite"></span></div><p class="c-desc">Brace glutes completely to block lumbar hyperextension. <span class="cite"></span></p></div></div>
+        <div class="card"><div class="c-img"><img src="assets/ex_w4_6.jpg" alt="Ex"></div><div class="c-info"><div class="c-tags"><span class="tag-main">SHOULDERS</span><span class="cite"></span></div><p class="c-title">Seated Dumbbell Lateral Raises <span class="cite"></span></p><div class="c-meta"><span class="meta-item">3 SETS</span><span class="meta-item">12 REPS</span><span class="meta-item">60s REST</span><span class="cite"></span></div><p class="c-desc">Completely deadens momentum. Pure lateral deltoid isolation. <span class="cite"></span></p></div></div>
+        <div class="card"><div class="c-img"><img src="assets/ex_w4_7.jpg" alt="Ex"></div><div class="c-info"><div class="c-tags"><span class="tag-main">SHOULDERS</span><span class="cite"></span></div><p class="c-title">Incline Bench Rear Delt Rows <span class="cite"></span></p><div class="c-meta"><span class="meta-item">3 SETS</span><span class="meta-item">15 REPS</span><span class="meta-item">60s REST</span><span class="cite"></span></div><p class="c-desc">Chest down on incline bench. Flare elbows wide out. <span class="cite"></span></p></div></div>
+        <div class="footer-tag">THE 10% BLUEPRINT • INKED FIT ELITE</div>
+    </div>
+
+    <!-- PAGE 7: W5 BACK/TRI -->
+    <div class="a4-page page-dark">
+        <h3>WORKOUT 5: BACK & ARMS (THICKNESS FOCUS) <span class="cite"></span></h3>
+        <div class="card"><div class="c-img"><img src="assets/ex_w5_1.jpg" alt="Ex"></div><div class="c-info"><div class="c-tags"><span class="tag-main">BACK</span><span class="cite"></span></div><p class="c-title">Barbell T-Bar Rows <span class="cite"></span></p><div class="c-meta"><span class="meta-item">4 SETS</span><span class="meta-item">8 REPS</span><span class="meta-item">90s REST</span><span class="cite"></span></div><p class="c-desc">Pull weight right into lower abdomen. Avoid vertical torso path. <span class="cite"></span></p></div></div>
+        <div class="card"><div class="c-img"><img src="assets/ex_w5_2.jpg" alt="Ex"></div><div class="c-info"><div class="c-tags"><span class="tag-main">BACK</span><span class="cite"></span></div><p class="c-title">Close-Grip Cable Rows <span class="cite"></span></p><div class="c-meta"><span class="meta-item">4 SETS</span><span class="meta-item">10 REPS</span><span class="meta-item">75s REST</span><span class="cite"></span></div><p class="c-desc">Squeeze shoulder blades flat together at peak contraction. <span class="cite"></span></p></div></div>
+        <div class="card"><div class="c-img"><img src="assets/ex_w5_3.jpg" alt="Ex"></div><div class="c-info"><div class="c-tags"><span class="tag-main">BACK</span><span class="cite"></span></div><p class="c-title">Underhand Grip Lat Pulldown <span class="cite"></span></p><div class="c-meta"><span class="meta-item">4 SETS</span><span class="meta-item">10 REPS</span><span class="meta-item">75s REST</span><span class="cite"></span></div><p class="c-desc">Maximizes lat lower attachment activation. Hold peak contraction. <span class="cite"></span></p></div></div>
+        <div class="card"><div class="c-img"><img src="assets/ex_w5_4.jpg" alt="Ex"></div><div class="c-info"><div class="c-tags"><span class="tag-main">BACK</span><span class="cite"></span></div><p class="c-title">Hyperextensions (Weighted) <span class="cite"></span></p><div class="c-meta"><span class="meta-item">4 SETS</span><span class="meta-item">15 REPS</span><span class="meta-item">60s REST</span><span class="cite"></span></div><p class="c-desc">Isolates spinal erectors and lower back safely. <span class="cite"></span></p></div></div>
+        <div class="card"><div class="c-img"><img src="assets/ex_w5_5.jpg" alt="Ex"></div><div class="c-info"><div class="c-tags"><span class="tag-main">TRICEPS</span><span class="cite"></span></div><p class="c-title">Close Grip Barbell Bench Press <span class="cite"></span></p><div class="c-meta"><span class="meta-item">3 SETS</span><span class="meta-item">8 REPS</span><span class="meta-item">90s REST</span><span class="cite"></span></div><p class="c-desc">Hands shoulder-width apart. Lower bar to lower chest. <span class="cite"></span></p></div></div>
+        <div class="card"><div class="c-img"><img src="assets/ex_w5_6.jpg" alt="Ex"></div><div class="c-info"><div class="c-tags"><span class="tag-main">TRICEPS</span><span class="cite"></span></div><p class="c-title">Single-Arm Cable Pushdowns <span class="cite"></span></p><div class="c-meta"><span class="meta-item">3 SETS</span><span class="meta-item">12 REPS</span><span class="meta-item">45s REST</span><span class="cite"></span></div><p class="c-desc">No handles, pull raw cable. Complete isolation. <span class="cite"></span></p></div></div>
+        <div class="footer-tag">THE 10% BLUEPRINT • INKED FIT ELITE</div>
+    </div>
+
+    <!-- PAGE 8: W5 ARMS -->
+    <div class="a4-page page-dark">
+        <h3 style="border: none;">WORKOUT 5: ARMS CONTINUED</h3>
+        <div class="card"><div class="c-img"><img src="assets/ex_w5_7.jpg" alt="Ex"></div><div class="c-info"><div class="c-tags"><span class="tag-main">TRICEPS</span><span class="cite"></span></div><p class="c-title">Dumbbell Kickbacks <span class="cite"></span></p><div class="c-meta"><span class="meta-item">3 SETS</span><span class="meta-item">12 REPS</span><span class="meta-item">60s REST</span><span class="cite"></span></div><p class="c-desc">Lock upper arm completely parallel to torso. Extension focus. <span class="cite"></span></p></div></div>
+        <div class="card"><div class="c-img"><img src="assets/ex_w5_8.jpg" alt="Ex"></div><div class="c-info"><div class="c-tags"><span class="tag-main">BICEPS</span><span class="cite"></span></div><p class="c-title">Standing EZ-Bar Curls <span class="cite"></span></p><div class="c-meta"><span class="meta-item">3 SETS</span><span class="meta-item">10 REPS</span><span class="meta-item">75s REST</span><span class="cite"></span></div><p class="c-desc">Keep posture rigid. Avoid any forward elbow drift. <span class="cite"></span></p></div></div>
+        <div class="card"><div class="c-img"><img src="assets/ex_w5_9.jpg" alt="Ex"></div><div class="c-info"><div class="c-tags"><span class="tag-main">BICEPS</span><span class="cite"></span></div><p class="c-title">Dumbbell Concentration Curls <span class="cite"></span></p><div class="c-meta"><span class="meta-item">3 SETS</span><span class="meta-item">12 REPS</span><span class="meta-item">60s REST</span><span class="cite"></span></div><p class="c-desc">Brace elbow against inner thigh. Peak contraction emphasis. <span class="cite"></span></p></div></div>
+        <div class="card"><div class="c-img"><img src="assets/ex_w5_10.jpg" alt="Ex"></div><div class="c-info"><div class="c-tags"><span class="tag-main">BICEPS</span><span class="cite"></span></div><p class="c-title">Cable Rope Bicep Hammer Curls <span class="cite"></span></p><div class="c-meta"><span class="meta-item">3 SETS</span><span class="meta-item">12 REPS</span><span class="meta-item">60s REST</span><span class="cite"></span></div><p class="c-desc">Constant tension path. Pull up to front of shoulders. <span class="cite"></span></p></div></div>
+        <div class="footer-tag">THE 10% BLUEPRINT • INKED FIT ELITE</div>
+    </div>
+
+    <!-- PAGE 9: W6 LEGS/ABS -->
+    <div class="a4-page page-dark">
+        <h3>WORKOUT 6: LEGS & ABS (QUAD DOMINANT FOCUS) <span class="cite"></span></h3>
+        <div class="card"><div class="c-img"><img src="assets/ex_w6_1.jpg" alt="Ex"></div><div class="c-info"><div class="c-tags"><span class="tag-main">LEGS</span><span class="cite"></span></div><p class="c-title">Front Squats <span class="cite"></span></p><div class="c-meta"><span class="meta-item">4 SETS</span><span class="meta-item">6-8 REPS</span><span class="meta-item">120s REST</span><span class="cite"></span></div><p class="c-desc">Forces absolute upright spine. Extreme quad emphasis. <span class="cite"></span></p></div></div>
+        <div class="card"><div class="c-img"><img src="assets/ex_w6_2.jpg" alt="Ex"></div><div class="c-info"><div class="c-tags"><span class="tag-main">LEGS</span><span class="cite"></span></div><p class="c-title">Hack Squat Machine <span class="cite"></span></p><div class="c-meta"><span class="meta-item">4 SETS</span><span class="meta-item">10 REPS</span><span class="meta-item">90s REST</span><span class="cite"></span></div><p class="c-desc">Lower deep under control. Keep feet low on plate for quads. <span class="cite"></span></p></div></div>
+        <div class="card"><div class="c-img"><img src="assets/ex_w6_3.jpg" alt="Ex"></div><div class="c-info"><div class="c-tags"><span class="tag-main">LEGS</span><span class="cite"></span></div><p class="c-title">Leg Extensions <span class="cite"></span></p><div class="c-meta"><span class="meta-item">4 SETS</span><span class="meta-item">15 REPS</span><span class="meta-item">60s REST</span><span class="cite"></span></div><p class="c-desc">Hold full extension for 2 full seconds on every single rep. <span class="cite"></span></p></div></div>
+        <div class="card"><div class="c-img"><img src="assets/ex_w6_4.jpg" alt="Ex"></div><div class="c-info"><div class="c-tags"><span class="tag-main">LEGS</span><span class="cite"></span></div><p class="c-title">Seated Leg Curl <span class="cite"></span></p><div class="c-meta"><span class="meta-item">4 SETS</span><span class="meta-item">12 REPS</span><span class="meta-item">60s REST</span><span class="cite"></span></div><p class="c-desc">Deep hamstring squeeze. Keep hips firmly down in seat. <span class="cite"></span></p></div></div>
+        <div class="card"><div class="c-img"><img src="assets/ex_w6_5.jpg" alt="Ex"></div><div class="c-info"><div class="c-tags"><span class="tag-main">ABS</span><span class="cite"></span></div><p class="c-title">Decline Bench Crunches <span class="cite"></span></p><div class="c-meta"><span class="meta-item">3 SETS</span><span class="meta-item">15 REPS</span><span class="meta-item">60s REST</span><span class="cite"></span></div><p class="c-desc">Keep hands behind ears, do not pull neck. <span class="cite"></span></p></div></div>
+        <div class="card"><div class="c-img"><img src="assets/ex_w6_6.jpg" alt="Ex"></div><div class="c-info"><div class="c-tags"><span class="tag-main">ABS</span><span class="cite"></span></div><p class="c-title">Captain's Chair Knee Raises <span class="cite"></span></p><div class="c-meta"><span class="meta-item">3 SETS</span><span class="meta-item">15 REPS</span><span class="meta-item">60s REST</span><span class="cite"></span></div><p class="c-desc">Roll hips upward at peak to isolate lower abdominal wall. <span class="cite"></span></p></div></div>
+        <div class="card"><div class="c-img"><img src="assets/ex_w6_7.jpg" alt="Ex"></div><div class="c-info"><div class="c-tags"><span class="tag-main">ABS</span><span class="cite"></span></div><p class="c-title">Plank (Weighted) <span class="cite"></span></p><div class="c-meta"><span class="meta-item">3 SETS</span><span class="meta-item">60s HOLD</span><span class="meta-item">60s REST</span><span class="cite"></span></div><p class="c-desc">Place plate on lower back. Keep body completely straight. <span class="cite"></span></p></div></div>
+        <div class="footer-tag">THE 10% BLUEPRINT • INKED FIT ELITE</div>
+    </div>
+
+    <!-- PAGE 10: W7 CHEST/SHOULDERS -->
+    <div class="a4-page page-dark">
+        <h3 style="color: var(--white); border: none;">WEEK 3: WORKOUTS 7-9 (MECHANICAL STRESS INTENSIFICATION) <span class="cite"></span></h3>
+        <h3>WORKOUT 7: CHEST & SHOULDERS (ISODYNAMIC HOLD SPLIT) <span class="cite"></span></h3>
+        <div class="card"><div class="c-img"><img src="assets/ex_w7_1.jpg" alt="Ex"></div><div class="c-info"><div class="c-tags"><span class="tag-main">CHEST</span><span class="cite"></span></div><p class="c-title">Dumbbell Bench Press <span class="cite"></span></p><div class="c-meta"><span class="meta-item">4 SETS</span><span class="meta-item">8 REPS</span><span class="meta-item">90s REST</span><span class="cite"></span></div><p class="c-desc">1-second pause at bottom of stretch window on each rep. <span class="cite"></span></p></div></div>
+        <div class="card"><div class="c-img"><img src="assets/ex_w7_2.jpg" alt="Ex"></div><div class="c-info"><div class="c-tags"><span class="tag-main">CHEST</span><span class="cite"></span></div><p class="c-title">Incline Smith Machine Press <span class="cite"></span></p><div class="c-meta"><span class="meta-item">4 SETS</span><span class="meta-item">10 REPS</span><span class="meta-item">90s REST</span><span class="cite"></span></div><p class="c-desc">Controlled tempo. High upper chest fiber targeting. <span class="cite"></span></p></div></div>
+        <div class="card"><div class="c-img"><img src="assets/ex_w7_3.jpg" alt="Ex"></div><div class="c-info"><div class="c-tags"><span class="tag-main">CHEST</span><span class="cite"></span></div><p class="c-title">Pec Deck Machine Flyes <span class="cite"></span></p><div class="c-meta"><span class="meta-item">4 SETS</span><span class="meta-item">12 REPS</span><span class="meta-item">60s REST</span><span class="cite"></span></div><p class="c-desc">Smash chest pads together at full contraction apex. <span class="cite"></span></p></div></div>
+        <div class="card"><div class="c-img"><img src="assets/ex_w7_4.jpg" alt="Ex"></div><div class="c-info"><div class="c-tags"><span class="tag-main">CHEST</span><span class="cite"></span></div><p class="c-title">Low-to-High Cable Crossovers <span class="cite"></span></p><div class="c-meta"><span class="meta-item">4 SETS</span><span class="meta-item">12 REPS</span><span class="meta-item">60s REST</span><span class="cite"></span></div><p class="c-desc">Brings extreme focus to the upper clavicular chest head. <span class="cite"></span></p></div></div>
+        <div class="card"><div class="c-img"><img src="assets/ex_w7_5.jpg" alt="Ex"></div><div class="c-info"><div class="c-tags"><span class="tag-main">SHOULDERS</span><span class="cite"></span></div><p class="c-title">Arnold Shoulder Press <span class="cite"></span></p><div class="c-meta"><span class="meta-item">3 SETS</span><span class="meta-item">10 REPS</span><span class="meta-item">90s REST</span><span class="cite"></span></div><p class="c-desc">Full internal-to-external rotation loop at bottom. <span class="cite"></span></p></div></div>
+        <div class="card"><div class="c-img"><img src="assets/ex_w7_6.jpg" alt="Ex"></div><div class="c-info"><div class="c-tags"><span class="tag-main">SHOULDERS</span><span class="cite"></span></div><p class="c-title">Single-Arm DB Lateral Raises <span class="cite"></span></p><div class="c-meta"><span class="meta-item">3 SETS</span><span class="meta-item">12-15 REPS</span><span class="meta-item">60s REST</span><span class="cite"></span></div><p class="c-desc">Hold onto rack with other arm, lean out for deeper path. <span class="cite"></span></p></div></div>
+        <div class="card"><div class="c-img"><img src="assets/ex_w7_7.jpg" alt="Ex"></div><div class="c-info"><div class="c-tags"><span class="tag-main">SHOULDERS</span><span class="cite"></span></div><p class="c-title">Face Pulls (Rope Cable) <span class="cite"></span></p><div class="c-meta"><span class="meta-item">3 SETS</span><span class="meta-item">15 REPS</span><span class="meta-item">60s REST</span><span class="cite"></span></div><p class="c-desc">Pull rope to bridge of nose, pull hands wide apart. <span class="cite"></span></p></div></div>
+        <div class="footer-tag">THE 10% BLUEPRINT • INKED FIT ELITE</div>
+    </div>
+
+    <!-- PAGE 11: W8 BACK/TRI -->
+    <div class="a4-page page-dark">
+        <h3>WORKOUT 8: BACK & ARMS (HIGH-DENSITY WIDTH SPLIT) <span class="cite"></span></h3>
+        <div class="card"><div class="c-img"><img src="assets/ex_w8_1.jpg" alt="Ex"></div><div class="c-info"><div class="c-tags"><span class="tag-main">BACK</span><span class="cite"></span></div><p class="c-title">Rack Pulls (Above Knee) <span class="cite"></span></p><div class="c-meta"><span class="meta-item">4 SETS</span><span class="meta-item">5 REPS</span><span class="meta-item">120s REST</span><span class="cite"></span></div><p class="c-desc">Pure thickness drive. Lock out upper back fully at top. <span class="cite"></span></p></div></div>
+        <div class="card"><div class="c-img"><img src="assets/ex_w8_2.jpg" alt="Ex"></div><div class="c-info"><div class="c-tags"><span class="tag-main">BACK</span><span class="cite"></span></div><p class="c-title">T-Bar Row <span class="cite"></span></p><div class="c-meta"><span class="meta-item">4 SETS</span><span class="meta-item">10 REPS</span><span class="meta-item">90s REST</span><span class="cite"></span></div><p class="c-desc"> <span class="cite"></span></p></div></div>
+        <div class="card"><div class="c-img"><img src="assets/ex_w8_3.jpg" alt="Ex"></div><div class="c-info"><div class="c-tags"><span class="tag-main">BACK</span><span class="cite"></span></div><p class="c-title">Straight-Arm Cable Pulldowns <span class="cite"></span></p><div class="c-meta"><span class="meta-item">4 SETS</span><span class="meta-item">12 REPS</span><span class="meta-item">60s REST</span><span class="cite"></span></div><p class="c-desc">Keeps biceps fully out of movement. Pure lat isolation. <span class="cite"></span></p></div></div>
+        <div class="card"><div class="c-img"><img src="assets/ex_w8_4.jpg" alt="Ex"></div><div class="c-info"><div class="c-tags"><span class="tag-main">BACK</span><span class="cite"></span></div><p class="c-title">V-Bar Lat Pulldowns <span class="cite"></span></p><div class="c-meta"><span class="meta-item">4 SETS</span><span class="meta-item">10 REPS</span><span class="meta-item">75s REST</span><span class="cite"></span></div><p class="c-desc">Lean back 15 degrees. Pull tightly to lower sternum. <span class="cite"></span></p></div></div>
+        <div class="card"><div class="c-img"><img src="assets/ex_w8_5.jpg" alt="Ex"></div><div class="c-info"><div class="c-tags"><span class="tag-main">TRICEPS</span><span class="cite"></span></div><p class="c-title">Weighted Bench Dips <span class="cite"></span></p><div class="c-meta"><span class="meta-item">3 SETS</span><span class="meta-item">10 REPS</span><span class="meta-item">75s REST</span><span class="cite"></span></div><p class="c-desc">Place plates carefully on lap. Keep back close to bench. <span class="cite"></span></p></div></div>
+        <div class="card"><div class="c-img"><img src="assets/ex_w8_6.jpg" alt="Ex"></div><div class="c-info"><div class="c-tags"><span class="tag-main">TRICEPS</span><span class="cite"></span></div><p class="c-title">V-Bar Cable Pushdowns <span class="cite"></span></p><div class="c-meta"><span class="meta-item">3 SETS</span><span class="meta-item">12 REPS</span><span class="meta-item">60s REST</span><span class="cite"></span></div><p class="c-desc">Forces massive mechanical loading into lateral head. <span class="cite"></span></p></div></div>
+        <div class="footer-tag">THE 10% BLUEPRINT • INKED FIT ELITE</div>
+    </div>
+
+    <!-- PAGE 12: W8 ARMS -->
+    <div class="a4-page page-dark">
+        <h3 style="border: none;">WORKOUT 8: ARMS CONTINUED</h3>
+        <div class="card"><div class="c-img"><img src="assets/ex_w8_7.jpg" alt="Ex"></div><div class="c-info"><div class="c-tags"><span class="tag-main">TRICEPS</span><span class="cite"></span></div><p class="c-title">Dumbbell Overhead Extension <span class="cite"></span></p><div class="c-meta"><span class="meta-item">3 SETS</span><span class="meta-item">10 REPS</span><span class="meta-item">60s REST</span><span class="cite"></span></div><p class="c-desc">Two hands on single heavy dumbbell. Full deep stretch. <span class="cite"></span></p></div></div>
+        <div class="card"><div class="c-img"><img src="assets/ex_w8_8.jpg" alt="Ex"></div><div class="c-info"><div class="c-tags"><span class="tag-main">BICEPS</span><span class="cite"></span></div><p class="c-title">Standing Barbell Curls <span class="cite"></span></p><div class="c-meta"><span class="meta-item">3 SETS</span><span class="meta-item">8 REPS</span><span class="meta-item">90s REST</span><span class="cite"></span></div><p class="c-desc">Heavy load. Use strict control with zero body rock. <span class="cite"></span></p></div></div>
+        <div class="card"><div class="c-img"><img src="assets/ex_w8_9.jpg" alt="Ex"></div><div class="c-info"><div class="c-tags"><span class="tag-main">BICEPS</span><span class="cite"></span></div><p class="c-title">Incline Hammer Curl <span class="cite"></span></p><div class="c-meta"><span class="meta-item">3 SETS</span><span class="meta-item">10 REPS</span><span class="meta-item">60s REST</span><span class="cite"></span></div><p class="c-desc">Back forward on bench. Pure vertical bicep isolation. <span class="cite"></span></p></div></div>
+        <div class="card"><div class="c-img"><img src="assets/ex_w8_10.jpg" alt="Ex"></div><div class="c-info"><div class="c-tags"><span class="tag-main">BICEPS</span><span class="cite"></span></div><p class="c-title">Cross-Body Hammer Curls <span class="cite"></span></p><div class="c-meta"><span class="meta-item">3 SETS</span><span class="meta-item">12 REPS</span><span class="meta-item">60s REST</span><span class="cite"></span></div><p class="c-desc">Curl dumbbell across body towards opposite shoulder. <span class="cite"></span></p></div></div>
+        <div class="footer-tag">THE 10% BLUEPRINT • INKED FIT ELITE</div>
+    </div>
+
+    <!-- PAGE 13: W9 LEGS/ABS -->
+    <div class="a4-page page-dark">
+        <h3>WORKOUT 9: LEGS & ABS (UNILATERAL FOCUS SPLIT) <span class="cite"></span></h3>
+        <div class="card"><div class="c-img"><img src="assets/ex_w9_1.jpg" alt="Ex"></div><div class="c-info"><div class="c-tags"><span class="tag-main">LEGS</span><span class="cite"></span></div><p class="c-title">Bulgarian Split Squats <span class="cite"></span></p><div class="c-meta"><span class="meta-item">4 SETS</span><span class="meta-item">8 /LEG</span><span class="meta-item">90s REST</span><span class="cite"></span></div><p class="c-desc">Hold dumbbells. Destroys structural imbalances, forces growth. <span class="cite"></span></p></div></div>
+        <div class="card"><div class="c-img"><img src="assets/ex_w9_2.jpg" alt="Ex"></div><div class="c-info"><div class="c-tags"><span class="tag-main">LEGS</span><span class="cite"></span></div><p class="c-title">Sumo Deadlifts <span class="cite"></span></p><div class="c-meta"><span class="meta-item">4 SETS</span><span class="meta-item">5 REPS</span><span class="meta-item">150s REST</span><span class="cite"></span></div><p class="c-desc">Wide stance, drive floor away via hips and adductors. <span class="cite"></span></p></div></div>
+        <div class="card"><div class="c-img"><img src="assets/ex_w9_3.jpg" alt="Ex"></div><div class="c-info"><div class="c-tags"><span class="tag-main">LEGS</span><span class="cite"></span></div><p class="c-title">Leg Press (High & Wide Stance) <span class="cite"></span></p><div class="c-meta"><span class="meta-item">4 SETS</span><span class="meta-item">12 REPS</span><span class="meta-item">90s REST</span><span class="cite"></span></div><p class="c-desc">Targets hamstrings and glutes directly off the platform. <span class="cite"></span></p></div></div>
+        <div class="card"><div class="c-img"><img src="assets/ex_w9_4.jpg" alt="Ex"></div><div class="c-info"><div class="c-tags"><span class="tag-main">LEGS</span><span class="cite"></span></div><p class="c-title">Standing Single-Leg Curl Machine <span class="cite"></span></p><div class="c-meta"><span class="meta-item">4 SETS</span><span class="meta-item">10 TOTAL</span><span class="meta-item">60s REST</span><span class="cite"></span></div><p class="c-desc">Prevents strength asymmetry across hamstrings. <span class="cite"></span></p></div></div>
+        <div class="card"><div class="c-img"><img src="assets/ex_w9_5.jpg" alt="Ex"></div><div class="c-info"><div class="c-tags"><span class="tag-main">ABS</span><span class="cite"></span></div><p class="c-title">Hanging Windshields Wipers <span class="cite"></span></p><div class="c-meta"><span class="meta-item">3 SETS</span><span class="meta-item">12 REPS</span><span class="meta-item">60s REST</span><span class="cite"></span></div><p class="c-desc">Rotational core stability, intense obliques stimulus. <span class="cite"></span></p></div></div>
+        <div class="card"><div class="c-img"><img src="assets/ex_w9_6.jpg" alt="Ex"></div><div class="c-info"><div class="c-tags"><span class="tag-main">ABS</span><span class="cite"></span></div><p class="c-title">Incline Reverse Crunch <span class="cite"></span></p><div class="c-meta"><span class="meta-item">3 SETS</span><span class="meta-item">12 /SIDE</span><span class="meta-item">60s REST</span><span class="cite"></span></div><p class="c-desc">Rotational force loading. Lock hips, rotate torso. <span class="cite"></span></p></div></div>
+        <div class="card"><div class="c-img"><img src="assets/ex_w9_7.jpg" alt="Ex"></div><div class="c-info"><div class="c-tags"><span class="tag-main">ABS</span><span class="cite"></span></div><p class="c-title">Reverse Crunches <span class="cite"></span></p><div class="c-meta"><span class="meta-item">3 SETS</span><span class="meta-item">15 REPS</span><span class="meta-item">45s REST</span><span class="cite"></span></div><p class="c-desc">Lie flat, pelvis upward cleanly off floor mats. <span class="cite"></span></p></div></div>
+        <div class="footer-tag">THE 10% BLUEPRINT • INKED FIT ELITE</div>
+    </div>
+
+    <!-- PAGE 14: W10 CHEST/SHOULDERS -->
+    <div class="a4-page page-dark">
+        <h3 style="color: var(--white); border: none;">WEEK 4: WORKOUTS 10-12 (PEAK OVERLOAD OVERREACHING) <span class="cite"></span></h3>
+        <h3>WORKOUT 10: CHEST & SHOULDERS (ABSOLUTE POWER LOAD) <span class="cite"></span></h3>
+        <div class="card"><div class="c-img"><img src="assets/ex_w10_1.jpg" alt="Ex"></div><div class="c-info"><div class="c-tags"><span class="tag-main">CHEST</span><span class="cite"></span></div><p class="c-title">Incline Dumbbell Bench Press <span class="cite"></span></p><div class="c-meta"><span class="meta-item">4 SETS</span><span class="meta-item">6 REPS</span><span class="meta-item">120s REST</span><span class="cite"></span></div><p class="c-desc">Peak load. Force execution at absolute maximum safe weight. <span class="cite"></span></p></div></div>
+        <div class="card"><div class="c-img"><img src="assets/ex_w10_2.jpg" alt="Ex"></div><div class="c-info"><div class="c-tags"><span class="tag-main">CHEST</span><span class="cite"></span></div><p class="c-title">Flat Dumbbell Bench Press <span class="cite"></span></p><div class="c-meta"><span class="meta-item">4 SETS</span><span class="meta-item">6 REPS</span><span class="meta-item">120s REST</span><span class="cite"></span></div><p class="c-desc">Pure mechanical power profiling. Stay far from injury line. <span class="cite"></span></p></div></div>
+        <div class="card"><div class="c-img"><img src="assets/ex_w10_3.jpg" alt="Ex"></div><div class="c-info"><div class="c-tags"><span class="tag-main">CHEST</span><span class="cite"></span></div><p class="c-title">Hammer Strength Chest Press <span class="cite"></span></p><div class="c-meta"><span class="meta-item">4 SETS</span><span class="meta-item">10 REPS</span><span class="meta-item">90s REST</span><span class="cite"></span></div><p class="c-desc">Continuous load velocity. Explode out of bottom hole. <span class="cite"></span></p></div></div>
+        <div class="card"><div class="c-img"><img src="assets/ex_w10_4.jpg" alt="Ex"></div><div class="c-info"><div class="c-tags"><span class="tag-main">CHEST</span><span class="cite"></span></div><p class="c-title">Cable Flyes (Mid-Height Setup) <span class="cite"></span></p><div class="c-meta"><span class="meta-item">4 SETS</span><span class="meta-item">15 REPS</span><span class="meta-item">60s REST</span><span class="cite"></span></div><p class="c-desc">High-density metabolic pump to flush tissue with blood. <span class="cite"></span></p></div></div>
+        <div class="card"><div class="c-img"><img src="assets/ex_w10_5.jpg" alt="Ex"></div><div class="c-info"><div class="c-tags"><span class="tag-main">SHOULDERS</span><span class="cite"></span></div><p class="c-title">Push Press (Barbell) <span class="cite"></span></p><div class="c-meta"><span class="meta-item">3 SETS</span><span class="meta-item">6 REPS</span><span class="meta-item">120s REST</span><span class="cite"></span></div><p class="c-desc">Use slight leg drive to launch heavy bar overhead. Control descent. <span class="cite"></span></p></div></div>
+        <div class="card"><div class="c-img"><img src="assets/ex_w10_6.jpg" alt="Ex"></div><div class="c-info"><div class="c-tags"><span class="tag-main">SHOULDERS</span><span class="cite"></span></div><p class="c-title">Dumbbell Lateral Raises (Drop Sets) <span class="cite"></span></p><div class="c-meta"><span class="meta-item">3 SETS</span><span class="meta-item">10->10 REPS</span><span class="meta-item">60s REST</span><span class="cite"></span></div><p class="c-desc">Drop weight 30% instantly after 10 reps, execute 10 more. <span class="cite"></span></p></div></div>
+        <div class="card"><div class="c-img"><img src="assets/ex_w10_7.jpg" alt="Ex"></div><div class="c-info"><div class="c-tags"><span class="tag-main">SHOULDERS</span><span class="cite"></span></div><p class="c-title">Bent-Over Lateral DB Raises <span class="cite"></span></p><div class="c-meta"><span class="meta-item">3 SETS</span><span class="meta-item">15 REPS</span><span class="meta-item">60s REST</span><span class="cite"></span></div><p class="c-desc">Maintain strict flat hinge posture. Destroy rear delts. <span class="cite"></span></p></div></div>
+        <div class="footer-tag">THE 10% BLUEPRINT • INKED FIT ELITE</div>
+    </div>
+
+    <!-- PAGE 15: W11 BACK/TRI -->
+    <div class="a4-page page-dark">
+        <h3>WORKOUT 11: BACK & ARMS (ABSOLUTE DENSITY SPLIT) <span class="cite"></span></h3>
+        <div class="card"><div class="c-img"><img src="assets/ex_w11_1.jpg" alt="Ex"></div><div class="c-info"><div class="c-tags"><span class="tag-main">BACK</span><span class="cite"></span></div><p class="c-title">Conventional Barbell Deadlifts <span class="cite"></span></p><div class="c-meta"><span class="meta-item">4 SETS</span><span class="meta-item">5 REPS</span><span class="meta-item">180s REST</span><span class="cite"></span></div><p class="c-desc">The king of posterior expansion. Pull absolute maximum load. <span class="cite"></span></p></div></div>
+        <div class="card"><div class="c-img"><img src="assets/ex_w11_2.jpg" alt="Ex"></div><div class="c-info"><div class="c-tags"><span class="tag-main">BACK</span><span class="cite"></span></div><p class="c-title">Weighted Pull-Ups <span class="cite"></span></p><div class="c-meta"><span class="meta-item">4 SETS</span><span class="meta-item">5 REPS</span><span class="meta-item">120s REST</span><span class="cite"></span></div><p class="c-desc">Add extra plate value to belt chain loop setup. <span class="cite"></span></p></div></div>
+        <div class="card"><div class="c-img"><img src="assets/ex_w11_3.jpg" alt="Ex"></div><div class="c-info"><div class="c-tags"><span class="tag-main">BACK</span><span class="cite"></span></div><p class="c-title">Seated Row (Wide Neutral Grip) <span class="cite"></span></p><div class="c-meta"><span class="meta-item">4 SETS</span><span class="meta-item">10 REPS</span><span class="meta-item">75s REST</span><span class="cite"></span></div><p class="c-desc">Squeeze upper lat and rhomboid network forcefully. <span class="cite"></span></p></div></div>
+        <div class="card"><div class="c-img"><img src="assets/ex_w11_4.jpg" alt="Ex"></div><div class="c-info"><div class="c-tags"><span class="tag-main">BACK</span><span class="cite"></span></div><p class="c-title">Dumbbell Incline Rows <span class="cite"></span></p><div class="c-meta"><span class="meta-item">4 SETS</span><span class="meta-item">12 REPS</span><span class="meta-item">75s REST</span><span class="cite"></span></div><p class="c-desc">Chest flat on bench. Complete pull with no lower back strain. <span class="cite"></span></p></div></div>
+        <div class="card"><div class="c-img"><img src="assets/ex_w11_5.jpg" alt="Ex"></div><div class="c-info"><div class="c-tags"><span class="tag-main">TRICEPS</span><span class="cite"></span></div><p class="c-title">Lying Dumbbell Tricep Extension <span class="cite"></span></p><div class="c-meta"><span class="meta-item">3 SETS</span><span class="meta-item">10 REPS</span><span class="meta-item">75s REST</span><span class="cite"></span></div><p class="c-desc">Incline setup shifts mechanical accent point beautifully. <span class="cite"></span></p></div></div>
+        <div class="card"><div class="c-img"><img src="assets/ex_w11_6.jpg" alt="Ex"></div><div class="c-info"><div class="c-tags"><span class="tag-main">TRICEPS</span><span class="cite"></span></div><p class="c-title">Cable Rope Overhead Extensions <span class="cite"></span></p><div class="c-meta"><span class="meta-item">3 SETS</span><span class="meta-item">12 REPS</span><span class="meta-item">60s REST</span><span class="cite"></span></div><p class="c-desc">Deep stretch tracking out from low pulley setup stack. <span class="cite"></span></p></div></div>
+        <div class="footer-tag">THE 10% BLUEPRINT • INKED FIT ELITE</div>
+    </div>
+
+    <!-- PAGE 16: W11 ARMS -->
+    <div class="a4-page page-dark">
+        <h3 style="border: none;">WORKOUT 11: ARMS CONTINUED</h3>
+        <div class="card"><div class="c-img"><img src="assets/ex_w11_7.jpg" alt="Ex"></div><div class="c-info"><div class="c-tags"><span class="tag-main">TRICEPS</span><span class="cite"></span></div><p class="c-title">Straight Bar Tricep Pressdowns <span class="cite"></span></p><div class="c-meta"><span class="meta-item">3 SETS</span><span class="meta-item">12 REPS</span><span class="meta-item">60s REST</span><span class="cite"></span></div><p class="c-desc">Lock elbows at sides, force absolute lower lockout. <span class="cite"></span></p></div></div>
+        <div class="card"><div class="c-img"><img src="assets/ex_w11_8.jpg" alt="Ex"></div><div class="c-info"><div class="c-tags"><span class="tag-main">BICEPS</span><span class="cite"></span></div><p class="c-title">Dumbbell Incline Curl (Alternating) <span class="cite"></span></p><div class="c-meta"><span class="meta-item">3 SETS</span><span class="meta-item">10 REPS</span><span class="meta-item">75s REST</span><span class="cite"></span></div><p class="c-desc">Turn wrists outward fully at the peak of contraction. <span class="cite"></span></p></div></div>
+        <div class="card"><div class="c-img"><img src="assets/ex_w11_9.jpg" alt="Ex"></div><div class="c-info"><div class="c-tags"><span class="tag-main">BICEPS</span><span class="cite"></span></div><p class="c-title">EZ-Bar Preacher Curls <span class="cite"></span></p><div class="c-meta"><span class="meta-item">3 SETS</span><span class="meta-item">10 REPS</span><span class="meta-item">60s REST</span><span class="cite"></span></div><p class="c-desc">Isolates short inner bicep head for peak height. <span class="cite"></span></p></div></div>
+        <div class="card"><div class="c-img"><img src="assets/ex_w11_10.jpg" alt="Ex"></div><div class="c-info"><div class="c-tags"><span class="tag-main">BICEPS</span><span class="cite"></span></div><p class="c-title">Reverse Grip Barbell Curls <span class="cite"></span></p><div class="c-meta"><span class="meta-item">3 SETS</span><span class="meta-item">12 REPS</span><span class="meta-item">60s REST</span><span class="cite"></span></div><p class="c-desc">Hits brachioradialis forearm grid along with biceps. <span class="cite"></span></p></div></div>
+        <div class="footer-tag">THE 10% BLUEPRINT • INKED FIT ELITE</div>
+    </div>
+
+    <!-- PAGE 17: W12 LEGS/ABS -->
+    <div class="a4-page page-dark">
+        <h3>WORKOUT 12: LEGS & ABS (MAXIMUM THRESHOLD VOLUME) <span class="cite"></span></h3>
+        <div class="card"><div class="c-img"><img src="assets/ex_w12_1.jpg" alt="Ex"></div><div class="c-info"><div class="c-tags"><span class="tag-main">LEGS</span><span class="cite"></span></div><p class="c-title">Barbell Back Squats (Heavy) <span class="cite"></span></p><div class="c-meta"><span class="meta-item">4 SETS</span><span class="meta-item">5 REPS</span><span class="meta-item">180s REST</span><span class="cite"></span></div><p class="c-desc">Absolute power output. Deep parallel verification required. <span class="cite"></span></p></div></div>
+        <div class="card"><div class="c-img"><img src="assets/ex_w12_2.jpg" alt="Ex"></div><div class="c-info"><div class="c-tags"><span class="tag-main">LEGS</span><span class="cite"></span></div><p class="c-title">Romanian Deadlifts (Heavy Load) <span class="cite"></span></p><div class="c-meta"><span class="meta-item">4 SETS</span><span class="meta-item">6 REPS</span><span class="meta-item">120s REST</span><span class="cite"></span></div><p class="c-desc">Strict core wall brace. Squeeze hamstrings flat to rise. <span class="cite"></span></p></div></div>
+        <div class="card"><div class="c-img"><img src="assets/ex_w12_3.jpg" alt="Ex"></div><div class="c-info"><div class="c-tags"><span class="tag-main">LEGS</span><span class="cite"></span></div><p class="c-title">Walking Dumbbell Lunges <span class="cite"></span></p><div class="c-meta"><span class="meta-item">4 SETS</span><span class="meta-item">20 STEPS</span><span class="meta-item">90s REST</span><span class="cite"></span></div><p class="c-desc">10 steps forward per leg. Continuous mechanical loading path. <span class="cite"></span></p></div></div>
+        <div class="card"><div class="c-img"><img src="assets/ex_w12_4.jpg" alt="Ex"></div><div class="c-info"><div class="c-tags"><span class="tag-main">LEGS</span><span class="cite"></span></div><p class="c-title">Seated Leg Press Calf Raises <span class="cite"></span></p><div class="c-meta"><span class="meta-item">4 SETS</span><span class="meta-item">15 REPS</span><span class="meta-item">60s REST</span><span class="cite"></span></div><p class="c-desc">Massive extension, deep painful stretch holds at bottom. <span class="cite"></span></p></div></div>
+        <div class="card"><div class="c-img"><img src="assets/ex_w12_5.jpg" alt="Ex"></div><div class="c-info"><div class="c-tags"><span class="tag-main">ABS</span><span class="cite"></span></div><p class="c-title">Frog Crunch <span class="cite"></span></p><div class="c-meta"><span class="meta-item">3 SETS</span><span class="meta-item">10 REPS</span><span class="meta-item">60s REST</span><span class="cite"></span></div><p class="c-desc"> <span class="cite"></span></p></div></div>
+        <div class="card"><div class="c-img"><img src="assets/ex_w12_6.jpg" alt="Ex"></div><div class="c-info"><div class="c-tags"><span class="tag-main">ABS</span><span class="cite"></span></div><p class="c-title">Cable Russian Twists <span class="cite"></span></p><div class="c-meta"><span class="meta-item">3 SETS</span><span class="meta-item">15 /SIDE</span><span class="meta-item">60s REST</span><span class="cite"></span></div><p class="c-desc">Brace torso, pull cable cleanly across body line via obliques. <span class="cite"></span></p></div></div>
+        <div class="card"><div class="c-img"><img src="assets/ex_w12_7.jpg" alt="Ex"></div><div class="c-info"><div class="c-tags"><span class="tag-main">ABS</span><span class="cite"></span></div><p class="c-title">Hanging Straight Knee Raises <span class="cite"></span></p><div class="c-meta"><span class="meta-item">3 SETS</span><span class="meta-item">20 REPS</span><span class="meta-item">45s REST</span><span class="cite"></span></div><p class="c-desc">Complete high reps till complete localized burn failure point. <span class="cite"></span></p></div></div>
+        <div class="footer-tag">THE 10% BLUEPRINT • INKED FIT ELITE</div>
+    </div>
+
+    <!-- PAGE 18: NUTRITION DAY 1 -->
+    <div class="a4-page page-light">
+        <h2>03/ THE 7-DAY ELITE NUTRITION MATRIX <span class="cite"></span></h2>
+        <p class="intro-text" style="margin-bottom: 40px;">An 80kg athlete must shift carbohydrate timing dynamically to protect training output while remaining in an uncompromised fat burn state. Here is your full 7-Day Custom Menu Loop. Every day hits the strict recomposition target cleanly. <span class="cite"></span></p>
+
+        <h3>DAY 1: HIGH LATS / CHEST LOADING PROFILE <span class="cite"></span></h3>
+        <div class="card"><div class="c-img"><img src="assets/food1.jpg" alt="Meal"></div><div class="c-info"><p class="c-title">Meal 1 (08:00) <span class="cite"></span></p><p class="c-desc">4 Whole Pasture Eggs + 60g Raw Rolled Oats + 40g Fresh Blueberries. Clean coffee. <span class="cite"></span></p><div class="c-meta"><span class="meta-item">P: 32g | C: 46g | F: 24g</span><span class="cite"></span></div></div></div>
+        <div class="card"><div class="c-img"><img src="assets/food2.jpg" alt="Meal"></div><div class="c-info"><p class="c-title">Meal 2 (13:00) <span class="cite"></span></p><p class="c-desc">200g Chicken Breast (Weighed raw) + 75g Dry Basmati Rice + 150g Roasted Asparagus + 10ml Virgin Olive Oil. <span class="cite"></span></p><div class="c-meta"><span class="meta-item">P: 48g | C: 61g | F: 12g</span><span class="cite"></span></div></div></div>
+        <div class="card"><div class="c-img"><img src="assets/food3.jpg" alt="Meal"></div><div class="c-info"><p class="c-title">Meal 3 (17:00) <span class="cite"></span></p><p class="c-desc">35g Whey Protein Isolate + 1 Large Banana + 2 Plain Crunchy Rice Cakes. <span class="cite"></span></p><div class="c-meta"><span class="meta-item">P: 30g | C: 38g | F: 1g</span><span class="cite"></span></div></div></div>
+        <div class="card"><div class="c-img"><img src="assets/food4.jpg" alt="Meal"></div><div class="c-info"><p class="c-title">Meal 4 (20:30) <span class="cite"></span></p><p class="c-desc">180g Lean Beef Tenderloin + 250g Sweet Potato (Baked) + Large Spinach Green Salad + 10g Crushed Walnuts. <span class="cite"></span></p><div class="c-meta"><span class="meta-item">P: 46g | C: 47g | F: 22g</span><span class="cite"></span></div></div></div>
+        <div class="footer-tag">THE 10% BLUEPRINT • INKED FIT ELITE</div>
+    </div>
+
+    <!-- PAGE 19: NUTRITION DAY 2 -->
+    <div class="a4-page page-light">
+        <h3>DAY 2: POSTERIOR CHAIN RECOVERY PROFILE <span class="cite"></span></h3>
+        <div class="card"><div class="c-img"><img src="assets/food5.jpg" alt="Meal"></div><div class="c-info"><p class="c-title">Meal 1 (08:00) <span class="cite"></span></p><p class="c-desc">200g Liquid Egg Whites + 2 Whole Pasture Eggs + 65g Raw Cream of Rice + 10g Almond Butter. <span class="cite"></span></p><div class="c-meta"><span class="meta-item">P: 35g | C: 50g | F: 14g</span><span class="cite"></span></div></div></div>
+        <div class="card"><div class="c-img"><img src="assets/food6.jpg" alt="Meal"></div><div class="c-info"><p class="c-title">Meal 2 (13:00) <span class="cite"></span></p><p class="c-desc">200g Lean Turkey Mince + 80g Dry Jasmine Rice + 150g Zucchini Slits + 10g Extra Virgin Macadamia Nut Oil. <span class="cite"></span></p><div class="c-meta"><span class="meta-item">P: 46g | C: 62g | F: 13g</span><span class="cite"></span></div></div></div>
+        <div class="card"><div class="c-img"><img src="assets/food7.jpg" alt="Meal"></div><div class="c-info"><p class="c-title">Meal 3 (17:00) <span class="cite"></span></p><p class="c-desc">35g Whey Protein Isolate + 150g Diced Fresh Sweet Mango + 1 Rice Cake. <span class="cite"></span></p><div class="c-meta"><span class="meta-item">P: 31g | C: 35g | F: 1g</span><span class="cite"></span></div></div></div>
+        <div class="card"><div class="c-img"><img src="assets/food8.jpg" alt="Meal"></div><div class="c-info"><p class="c-title">Meal 4 (20:30) <span class="cite"></span></p><p class="c-desc">190g Wild Atlantic Salmon Fillet + 220g Roasted Red Potatoes + Steamed Bok Choy Network. <span class="cite"></span></p><div class="c-meta"><span class="meta-item">P: 44g | C: 43g | F: 23g</span><span class="cite"></span></div></div></div>
+        <div class="footer-tag">THE 10% BLUEPRINT • INKED FIT ELITE</div>
+    </div>
+
+    <!-- PAGE 20: NUTRITION DAY 3 -->
+    <div class="a4-page page-light">
+        <h3>DAY 3: ADDUCTOR / MID-WEEK GLYCOGEN OVERWRITE <span class="cite"></span></h3>
+        <div class="card"><div class="c-img"><img src="assets/food9.jpg" alt="Meal"></div><div class="c-info"><p class="c-title">Meal 1 (08:00) <span class="cite"></span></p><p class="c-desc">35g Whey Protein Isolate blended into 70g Oats + 15g Chia Seeds + Water. <span class="cite"></span></p><div class="c-meta"><span class="meta-item">P: 36g | C: 53g | F: 9g</span><span class="cite"></span></div></div></div>
+        <div class="card"><div class="c-img"><img src="assets/food10.jpg" alt="Meal"></div><div class="c-info"><p class="c-title">Meal 2 (13:00) <span class="cite"></span></p><p class="c-desc">190g Ultra Lean Beef Mince (5% Fat) + 75g Dry Basmati Rice + 150g Steamed Broccoli Slits. <span class="cite"></span></p><div class="c-meta"><span class="meta-item">P: 47g | C: 60g | F: 12g</span><span class="cite"></span></div></div></div>
+        <div class="card"><div class="c-img"><img src="assets/food11.jpg" alt="Meal"></div><div class="c-info"><p class="c-title">Meal 3 (17:00) <span class="cite"></span></p><p class="c-desc">3 Whole Pasture Eggs (Scrambled) + 2 Thick Slices of Whole Grain Sourdough Toast. <span class="cite"></span></p><div class="c-meta"><span class="meta-item">P: 24g | C: 30g | F: 16g</span><span class="cite"></span></div></div></div>
+        <div class="card"><div class="c-img"><img src="assets/food12.jpg" alt="Meal"></div><div class="c-info"><p class="c-title">Meal 4 (20:30) <span class="cite"></span></p><p class="c-desc">210g Chicken Breast (Weighed raw) + 250g Steamed Sweet Potato chunks + Raw Avocado Salad (50g). <span class="cite"></span></p><div class="c-meta"><span class="meta-item">P: 49g | C: 48g | F: 14g</span><span class="cite"></span></div></div></div>
+        <div class="footer-tag">THE 10% BLUEPRINT • INKED FIT ELITE</div>
+    </div>
+
+    <!-- PAGE 21: NUTRITION DAY 4 -->
+    <div class="a4-page page-light">
+        <h3>DAY 4: HIGH NEURAL DEMAND FOCUS RESET <span class="cite"></span></h3>
+        <div class="card"><div class="c-img"><img src="assets/food13.jpg" alt="Meal"></div><div class="c-info"><p class="c-title">Meal 1 (08:00) <span class="cite"></span></p><p class="c-desc">150g Lean Beef Sirloin (Breakfast Cut) + 3 Egg Whites + 60g Buckwheat Groats. <span class="cite"></span></p><div class="c-meta"><span class="meta-item">P: 45g | C: 44g | F: 11g</span><span class="cite"></span></div></div></div>
+        <div class="card"><div class="c-img"><img src="assets/food14.jpg" alt="Meal"></div><div class="c-info"><p class="c-title">Meal 2 (13:00) <span class="cite"></span></p><p class="c-desc">200g White Fish Fillet (Cod/Haddock) + 85g Dry Jasmine Rice + 10ml Olive Oil over green beans. <span class="cite"></span></p><div class="c-meta"><span class="meta-item">P: 42g | C: 66g | F: 12g</span><span class="cite"></span></div></div></div>
+        <div class="card"><div class="c-img"><img src="assets/food15.jpg" alt="Meal"></div><div class="c-info"><p class="c-title">Meal 3 (17:00) <span class="cite"></span></p><p class="c-desc">35g Whey Protein Isolate + 40g Pure Raw Honey mixed with 2 Rice Cakes. <span class="cite"></span></p><div class="c-meta"><span class="meta-item">P: 30g | C: 35g | F: 0g</span><span class="cite"></span></div></div></div>
+        <div class="card"><div class="c-img"><img src="assets/food16.jpg" alt="Meal"></div><div class="c-info"><p class="c-title">Meal 4 (20:30) <span class="cite"></span></p><p class="c-desc">200g Lean Turkey Breast Steaks + 230g Sweet Potato Wedges + 15g Cashew Nuts. <span class="cite"></span></p><div class="c-meta"><span class="meta-item">P: 48g | C: 44g | F: 15g</span><span class="cite"></span></div></div></div>
+        <div class="footer-tag">THE 10% BLUEPRINT • INKED FIT ELITE</div>
+    </div>
+
+    <!-- PAGE 22: NUTRITION DAY 5 -->
+    <div class="a4-page page-light">
+        <h3>DAY 5: SHOULDER WIDTH / ANTERIOR DEPLETION LOOP <span class="cite"></span></h3>
+        <div class="card"><div class="c-img"><img src="assets/food17.jpg" alt="Meal"></div><div class="c-info"><p class="c-title">Meal 1 (08:00) <span class="cite"></span></p><p class="c-desc">4 Large Whole Eggs + 55g Raw Oats cooked with 5g Premium Dark Cocoa Powder. <span class="cite"></span></p><div class="c-meta"><span class="meta-item">P: 31g | C: 42g | F: 25g</span><span class="cite"></span></div></div></div>
+        <div class="card"><div class="c-img"><img src="assets/food18.jpg" alt="Meal"></div><div class="c-info"><p class="c-title">Meal 2 (13:00) <span class="cite"></span></p><p class="c-desc">210g Chicken Breast chunks + 75g Dry Basmati Rice + Unlimited Green Bell Pepper rings + 10ml Olive Oil. <span class="cite"></span></p><div class="c-meta"><span class="meta-item">P: 50g | C: 60g | F: 12g</span><span class="cite"></span></div></div></div>
+        <div class="card"><div class="c-img"><img src="assets/food19.jpg" alt="Meal"></div><div class="c-info"><p class="c-title">Meal 3 (17:00) <span class="cite"></span></p><p class="c-desc">35g Whey Protein Isolate + 1 Large Sweet Apple + 20g Pure Dark Chocolate (85%+). <span class="cite"></span></p><div class="c-meta"><span class="meta-item">P: 31g | C: 33g | F: 9g</span><span class="cite"></span></div></div></div>
+        <div class="card"><div class="c-img"><img src="assets/food20.jpg" alt="Meal"></div><div class="c-info"><p class="c-title">Meal 4 (20:30) <span class="cite"></span></p><p class="c-desc">180g Lean Flank Steak + 260g White Baked Potato + Asparagus Spears with lemon juice. <span class="cite"></span></p><div class="c-meta"><span class="meta-item">P: 44g | C: 49g | F: 13g</span><span class="cite"></span></div></div></div>
+        <div class="footer-tag">THE 10% BLUEPRINT • INKED FIT ELITE</div>
+    </div>
+
+    <!-- PAGE 23: NUTRITION DAY 6 -->
+    <div class="a4-page page-light">
+        <h3>DAY 6: COMPLETE WEEKEND GLYCOGEN OVERHAUL <span class="cite"></span></h3>
+        <div class="card"><div class="c-img"><img src="assets/food21.jpg" alt="Meal"></div><div class="c-info"><p class="c-title">Meal 1 (08:00) <span class="cite"></span></p><p class="c-desc">250g Low-Fat Greek Yogurt (0% Fat) + 30g Whey Protein + 65g Raw Oats + 50g Raspberries. <span class="cite"></span></p><div class="c-meta"><span class="meta-item">P: 54g | C: 52g | F: 5g</span><span class="cite"></span></div></div></div>
+        <div class="card"><div class="c-img"><img src="assets/food22.jpg" alt="Meal"></div><div class="c-info"><p class="c-title">Meal 2 (13:00) <span class="cite"></span></p><p class="c-desc">200g Lean Turkey Breast + 80g Dry Jasmine Rice + Mixed Vegetable medley (150g). <span class="cite"></span></p><div class="c-meta"><span class="meta-item">P: 47g | C: 63g | F: 4g</span><span class="cite"></span></div></div></div>
+        <div class="card"><div class="c-img"><img src="assets/food23.jpg" alt="Meal"></div><div class="c-info"><p class="c-title">Meal 3 (17:00) <span class="cite"></span></p><p class="c-desc">2 Whole Pasture Eggs + 4 Extra Egg Whites Scrambled + 2 Rice Cakes. <span class="cite"></span></p><div class="c-meta"><span class="meta-item">P: 32g | C: 16g | F: 11g</span><span class="cite"></span></div></div></div>
+        <div class="card"><div class="c-img"><img src="assets/food24.jpg" alt="Meal"></div><div class="c-info"><p class="c-title">Meal 4 (20:30) <span class="cite"></span></p><p class="c-desc">170g Sea Bass or Wild Salmon + 280g Sweet Potato Steamed + 15ml Premium Flaxseed Oil. <span class="cite"></span></p><div class="c-meta"><span class="meta-item">P: 39g | C: 51g | F: 24g</span><span class="cite"></span></div></div></div>
+        <div class="footer-tag">THE 10% BLUEPRINT • INKED FIT ELITE</div>
+    </div>
+
+    <!-- PAGE 24: NUTRITION DAY 7 -->
+    <div class="a4-page page-light">
+        <h3>DAY 7: SYSTEMIC METABOLIC RESET RECHARGE <span class="cite"></span></h3>
+        <div class="card"><div class="c-img"><img src="assets/food25.jpg" alt="Meal"></div><div class="c-info"><p class="c-title">Meal 1 (08:00) <span class="cite"></span></p><p class="c-desc">3 Whole Pasture Eggs + 150g Liquid Egg Whites scrambled + 55g Raw Cream of Rice. <span class="cite"></span></p><div class="c-meta"><span class="meta-item">P: 42g | C: 43g | F: 16g</span><span class="cite"></span></div></div></div>
+        <div class="card"><div class="c-img"><img src="assets/food26.jpg" alt="Meal"></div><div class="c-info"><p class="c-title">Meal 2 (13:00) <span class="cite"></span></p><p class="c-desc">200g Chicken Breast + 75g Dry Basmati Rice + 150g Broccoli + 10g Extra Virgin Walnut Oil. <span class="cite"></span></p><div class="c-meta"><span class="meta-item">P: 48g | C: 60g | F: 12g</span><span class="cite"></span></div></div></div>
+        <div class="card"><div class="c-img"><img src="assets/food27.jpg" alt="Meal"></div><div class="c-info"><p class="c-title">Meal 3 (17:00) <span class="cite"></span></p><p class="c-desc">35g Whey Protein Isolate + 1 Large Banana + 2 Rice Cakes with a thin layer of pure strawberry spread. <span class="cite"></span></p><div class="c-meta"><span class="meta-item">P: 30g | C: 40g | F: 1g</span><span class="cite"></span></div></div></div>
+        <div class="card"><div class="c-img"><img src="assets/food28.jpg" alt="Meal"></div><div class="c-info"><p class="c-title">Meal 4 (20:30) <span class="cite"></span></p><p class="c-desc">190g Lean Beef Fillet Steak + 240g Sweet Potato Mash + Large Green Mixed Leaf Field Salad. <span class="cite"></span></p><div class="c-meta"><span class="meta-item">P: 47g | C: 45g | F: 16g</span><span class="cite"></span></div></div></div>
+        <div class="footer-tag">THE 10% BLUEPRINT • INKED FIT ELITE</div>
+    </div>
+
+    <!-- PAGE 25: SUPPLEMENTATION -->
+    <div class="a4-page page-light">
+        <h2>04 / ADVANCED SUPPLEMENTATION MASTERCLASS <span class="cite"></span></h2>
+        <p class="intro-text" style="margin-bottom: 30px;">To pull an 80kg frame down to a shredded sub-10% state with crisp definition, we utilize extreme supplement profiling. These compounds unlock pure cellular advantage: <span class="cite"></span></p>
+        
+        <div style="background: #f9fafb; border-left: 6px solid var(--yellow); padding: 25px; margin-bottom: 25px; border-radius: 12px; border: 1px solid #e5e7eb;">
+            <p style="font-family: 'Oswald', sans-serif; font-size: 22px; margin-bottom: 15px; color: var(--black);">1. CITRULLINE MALATE <span style="font-size: 16px; color: #6b7280; font-family: 'Inter', sans-serif;">(THE VASODILATION ENGINE)</span> <span class="cite"></span></p>
+            <p><span class="highlight">Elite Protocol:</span> 8 grams ingested precisely 30-45 minutes before entering the training block. <span class="cite"></span></p>
+            <p><span class="highlight">Biochemical Target:</span> Functions as an immediate precursor to Nitric Oxide. Forces radical vasodilation, resulting in skin-splitting muscular pumps, hyper-accelerated nutrient tracking into active sarcoplasm, and rapid clearing of metabolic lactic acid accumulation. <span class="cite"></span></p>
+        </div>
+
+        <div style="background: #f9fafb; border-left: 6px solid var(--yellow); padding: 25px; margin-bottom: 25px; border-radius: 12px; border: 1px solid #e5e7eb;">
+            <p style="font-family: 'Oswald', sans-serif; font-size: 22px; margin-bottom: 15px; color: var(--black);">2. CREATINE MONOHYDRATE <span style="font-size: 16px; color: #6b7280; font-family: 'Inter', sans-serif;">(ATP SATURATION)</span> <span class="cite"></span></p>
+            <p><span class="highlight">Elite Protocol:</span> 5 grams taken daily post-workout alongside Meal 3 to capture maximum insulin spike sensitivity. <span class="cite"></span></p>
+            <p><span class="highlight">Biochemical Target:</span> Forces absolute intracellular water retention and volumization within muscle cells. Radically scales up phosphocreatine reserves to fuel fast-twitch high-threshold motor unit output during heavy compound lifts. <span class="cite"></span></p>
+        </div>
+
+        <div style="background: #f9fafb; border-left: 6px solid var(--yellow); padding: 25px; border-radius: 12px; border: 1px solid #e5e7eb;">
+            <p style="font-family: 'Oswald', sans-serif; font-size: 22px; margin-bottom: 15px; color: var(--black);">3. WHEY PROTEIN ISOLATE <span style="font-size: 16px; color: #6b7280; font-family: 'Inter', sans-serif;">(NATIVE BIOAVAILABILITY)</span> <span class="cite"></span></p>
+            <p><span class="highlight">Elite Protocol:</span> 35 grams post-workout or during structured low nitrogen metabolic gaps. <span class="cite"></span></p>
+            <p><span class="highlight">Biochemical Target:</span> Cross-flow microfiltered isolate guarantees a 90%+ pure protein footprint with near-zero lactose or fats. Triggers an acute Leucine spike in the bloodstream, initiating immediate Muscle Protein Synthesis loops. <span class="cite"></span></p>
+        </div>
+        <div class="footer-tag">THE 10% BLUEPRINT • INKED FIT ELITE</div>
+    </div>
+
+    <!-- PAGE 26: CARDIO & RECOVERY -->
+    <div class="a4-page page-light">
+        <div style="background: #f9fafb; border-left: 6px solid var(--yellow); padding: 25px; margin-bottom: 25px; border-radius: 12px; border: 1px solid #e5e7eb;">
+            <p style="font-family: 'Oswald', sans-serif; font-size: 22px; margin-bottom: 15px; color: var(--black);">4. HIGH-YIELD OMEGA-3 FISH OIL <span style="font-size: 16px; color: #6b7280; font-family: 'Inter', sans-serif;">(INFLAMMATION BLOCKER)</span> <span class="cite"></span></p>
+            <p><span class="highlight">Elite Protocol:</span> 3,500mg daily split cleanly across Meal 1 and Meal 4. <span class="cite"></span></p>
+            <p><span class="highlight">Biochemical Target:</span> Massive payload of pure EPA/DHA lines cell membranes to optimize muscle insulin sensitivity. Methodically reduces high systemic joint tissue inflammation caused by the brutal 12-workout matrix load loops. <span class="cite"></span></p>
+        </div>
+
+        <div style="background: #f9fafb; border-left: 6px solid var(--yellow); padding: 25px; border-radius: 12px; border: 1px solid #e5e7eb;">
+            <p style="font-family: 'Oswald', sans-serif; font-size: 22px; margin-bottom: 15px; color: var(--black);">5. ESSENTIAL MICRONUTRIENT SUPPORT SYSTEM <span class="cite"></span></p>
+            <p><span class="highlight">Vitamin D3 + K2:</span> 5,000 IU D3 combined with 100mcg K2 taken with breakfast fats. Essential for structural free testosterone bioavailability. <span class="cite"></span></p>
+            <p><span class="highlight">ZMA (Zinc / Magnesium Aspartate):</span> Taken exactly 30 minutes before sleep window. Restores neurological electrical balance and deeply extends Phase 4 deep slow-wave sleep repair loops. <span class="cite"></span></p>
+        </div>
+
+        <h2 style="margin-top: 50px;">05/ TACTICAL CARDIO & RECOVERY PATHWAYS <span class="cite"></span></h2>
+        <p class="intro-text">Cardio during elite body recomposition is exclusively an energy expenditure lever to oxidize lipid stores without stimulating muscle-destructive cortisol pathways. <span class="cite"></span></p>
+        
+        <p style="margin-top: 20px; font-size: 16px;"><strong>The LISS Formula:</strong> 35-45 minutes of Incline Treadmill Tracking performed either fasting or strictly prior to your main weight session to prime the metabolic engine. Set incline to 12-14%, speed to 4.2 km/h. Keep your heart rate locked inside the 118-128 BPM fat-oxidation window. <span class="cite"></span></p>
+        
+        <p style="margin-top: 20px; font-size: 16px;"><strong>The Sleep Mandate:</strong> Minimum 8 hours of dark, cold sleep (19°C room temperature). Growth Hormone release peaks only when the brain enters uninterrupted slow-wave sleep cycles. Disconnect blue-light electronics 60 minutes before hitting the bed. <span class="cite"></span></p>
+
+        <p style="text-align: center; margin-top: auto; padding-top: 60px; font-family: 'Oswald', sans-serif; color: #d1d5db; letter-spacing: 3px; font-size: 16px;">THE MATRIX SECURED • ALL RIGHTS RESERVED • INKED FIT <span class="cite"></span></p>
+    </div>
+
+    <!-- PWA INSTALL SCRIPT -->
+    <script>
+      // 1. Регистрируем Service Worker (для офлайна)
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('./sw.js').then(reg => {
+            console.log('SW registered!', reg);
+          }).catch(err => console.log('SW failed', err));
+        });
+      }
+
+      // 2. Логика кнопки "Установить" (работает на Android и в Chrome)
+      let deferredPrompt;
+      const installBtn = document.getElementById('installAppBtn');
+
+      window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault(); 
+        deferredPrompt = e; 
+        installBtn.style.display = 'block'; 
+      });
+
+      installBtn.addEventListener('click', async () => {
+        if (deferredPrompt) {
+          deferredPrompt.prompt(); 
+          const { outcome } = await deferredPrompt.userChoice;
+          if (outcome === 'accepted') {
+            installBtn.style.display = 'none'; 
+          }
+          deferredPrompt = null;
+        }
+      });
+    </script>
+</body>
+</html>
